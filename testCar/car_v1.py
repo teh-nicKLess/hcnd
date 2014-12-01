@@ -17,19 +17,19 @@ class MyClass(object):
         Constructor
         '''
         self.__carLocation  = 0, 0
-        self.__carHeading   = 0.0
-        self.__carSpeed     = 0.0
+        self._heading   = 0.0
+        self._speed     = 0.0
         self.__steerAngle   = 0.0
-        self.__wheelBase    = 0.0 #the distance between the two axles
+        self._wheelBase    = 0.0 #the distance between the two axles
         
     def update(self, deltaTime):
-        frontWheel = self.__carLocation + self.__wheelBase/2 * ( math.cos(self.__carHeading) , math.sin(self.__carHeading) );
-        backWheel = self.__carLocation - self.__wheelBase/2 * ( math.cos(self.__carHeading) , math.sin(self.__carHeading) );  
+        frontWheel = self.__carLocation + self._wheelBase/2 * ( math.cos(self._heading) , math.sin(self._heading) );
+        backWheel = self.__carLocation - self._wheelBase/2 * ( math.cos(self._heading) , math.sin(self._heading) );  
         
-        backWheel += self.__carSpeed * deltaTime * (math.cos(self.___carHeading) , math.sin(self.__carHeading));
-        frontWheel += self.__carSpeed * deltaTime * (math.cos(self.__carHeading+self.__steerAngle) , math.sin(self.__carHeading+self.__steerAngle));
+        backWheel += self._speed * deltaTime * (math.cos(self.___carHeading) , math.sin(self._heading));
+        frontWheel += self._speed * deltaTime * (math.cos(self._heading+self.__steerAngle) , math.sin(self._heading+self.__steerAngle));
         
         self.__carLocation = (frontWheel + backWheel) / 2.0;
-        self.__carHeading = math.atan2( frontWheel.Y - backWheel.Y , frontWheel.X - backWheel.X );
+        self._heading = math.atan2( frontWheel.Y - backWheel.Y , frontWheel.X - backWheel.X );
 
       
