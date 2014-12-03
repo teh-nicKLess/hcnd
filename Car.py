@@ -8,6 +8,7 @@ from pygame.locals import *
     
 import pygame
 import math
+import hcnd_v1
 
 class Car(object):
     '''
@@ -55,9 +56,11 @@ class Car(object):
         self._steerAngle += direction*timeSlice*math.pi/4.0
         if self._steerAngle > math.pi/4.0:
             self._steerAngle = math.pi/4.0
-        if direction == 0:
-            self._steerAngle = 0
-            
+        elif self._steerAngle < -math.pi/4.0:
+            self._steerAngle = -math.pi/4.0
+#         if direction == 0:
+#             self._steerAngle = 0
+
     def update(self, timeSlice):
         
         
@@ -86,22 +89,69 @@ class Car(object):
 #         self._pos[1] = self._pos[1] + math.cos(self._carHeading)*self._speed
     
     def render(self):
-        #TODO: fix this...
         glPushMatrix()
         glTranslatef(self._posX, self._posY, 0.0)
-        glRotatef(math.degrees(self._heading),0.0, 1.0, 0.0)
+        glRotatef(math.degrees(self._heading),0.0, 0.0, 1.0)
+          
         
-#         backPosX  = self._posX - self._length / 2 * math.cos(self._heading)
-#         frontPosX = self._posX + self._length / 2 * math.cos(self._heading)
-#         leftPosY  = self._posY - self._width / 2 * math.cos(self._heading)
-#         rightPosY = self._posY + self._width / 2 * math.cos(self._heading)
-#         print backPosX, frontPosX, leftPosY, rightPosY
-        glBegin(GL_TRIANGLE_STRIP)
+        glBegin(GL_QUADS)
         glColor4fv(self._color)
-        glVertex3f(self._length/2, -self._width/2, 0.0)
         glVertex3f(-self._length/2, -self._width/2, 0.0)
+        glVertex3f(self._length/2, -self._width/2, 0.0)
         glVertex3f(self._length/2, self._width/2, 0.0)
         glVertex3f(-self._length/2, self._width/2, 0.0)
         glEnd()
-        
+         
         glPopMatrix()
+        
+#         backPosX  = self._posX - self._length / 2 * math.cos(self._heading) + self._width / 2 * math.sin(self._heading)
+#         frontPosX = self._posX + self._length / 2 * math.cos(self._heading) - self._width / 2 * math.sin(self._heading)
+#         leftPosY  = self._posY - self._width / 2 * math.cos(self._heading) + self._length / 2 * math.sin(self._heading)
+#         rightPosY = self._posY + self._width / 2 * math.cos(self._heading) - self._length / 2 * math.sin(self._heading)
+        
+#         glBegin(GL_QUADS)
+#         # complete
+#         glColor3f(1.0,0.0,0.0)
+#         glVertex3f(backPosX, leftPosY, 0.0)
+#         glVertex3f(backPosX, rightPosY, 0.0)
+#         glVertex3f(frontPosX, rightPosY, 0.0)
+#         glVertex3f(frontPosX, leftPosY, 0.0)
+#         
+#         # center
+#         glColor3f(1.0,1.0,1.0)
+#         glVertex3f(self._posX-2, self._posY-2, 0.0)
+#         glVertex3f(self._posX-2, self._posY+2, 0.0)
+#         glVertex3f(self._posX+2, self._posY+2, 0.0)
+#         glVertex3f(self._posX+2, self._posY-2, 0.0)
+#         
+#         # back left
+#         glColor3f(1.0,1.0,0.0)
+#         glVertex3f(self._posX-2-self._length/2, self._posY-2-self._width/2, 0.0)
+#         glVertex3f(self._posX-2-self._length/2, self._posY+2-self._width/2, 0.0)
+#         glVertex3f(self._posX+2-self._length/2, self._posY+2-self._width/2, 0.0)
+#         glVertex3f(self._posX+2-self._length/2, self._posY-2-self._width/2, 0.0)
+#         
+#         # back right
+#         glColor3f(1.0,0.0,1.0)
+#         glVertex3f(self._posX-2-self._length/2, self._posY-2+self._width/2, 0.0)
+#         glVertex3f(self._posX-2-self._length/2, self._posY+2+self._width/2, 0.0)
+#         glVertex3f(self._posX+2-self._length/2, self._posY+2+self._width/2, 0.0)
+#         glVertex3f(self._posX+2-self._length/2, self._posY-2+self._width/2, 0.0)
+#         
+#         # front right
+#         glColor3f(0.0,1.0,1.0)
+#         glVertex3f(self._posX-2+self._length/2, self._posY-2+self._width/2, 0.0)
+#         glVertex3f(self._posX-2+self._length/2, self._posY+2+self._width/2, 0.0)
+#         glVertex3f(self._posX+2+self._length/2, self._posY+2+self._width/2, 0.0)
+#         glVertex3f(self._posX+2+self._length/2, self._posY-2+self._width/2, 0.0)
+#         
+#         # front left
+#         glColor3f(0.0,0.0,1.0)
+#         glVertex3f(self._posX-2+self._length/2, self._posY-2-self._width/2, 0.0)
+#         glVertex3f(self._posX-2+self._length/2, self._posY+2-self._width/2, 0.0)
+#         glVertex3f(self._posX+2+self._length/2, self._posY+2-self._width/2, 0.0)
+#         glVertex3f(self._posX+2+self._length/2, self._posY-2-self._width/2, 0.0)
+#         glEnd()
+        
+if __name__ == '__main__':
+    hcnd_v1.main()
