@@ -187,6 +187,20 @@ class Car(object):
         glEnd()
         
         #draw details
+        
+        #side mirrors
+        glBegin(GL_QUADS)
+        glVertex3f(7, -self._width/2, 0.0)
+        glVertex3f(9, -self._width/2, 0.0)
+        glVertex3f(7, -self._width/2-2, 0.0)
+        glVertex3f(6, -self._width/2-2, 0.0)
+        
+        glVertex3f(6, self._width/2+2, 0.0)
+        glVertex3f(7, self._width/2+2, 0.0)
+        glVertex3f(9, self._width/2, 0.0)
+        glVertex3f(7, self._width/2, 0.0)
+        glEnd()
+        
         #hood lines
         glBegin(GL_LINES)
         glColor4fv(pygame.Color(120,20,20).normalize())
@@ -216,9 +230,10 @@ class Car(object):
         glVertex3f(-self._length/2+3, -self._width/2+6, 0.0)
         glEnd()
         
+        
         #draw the wind shield
         glBegin(GL_TRIANGLE_STRIP)
-        glColor3f(75.0/255, 112.0/255, 150.0/255)
+        glColor3f(110.0/255, 140.0/255, 150.0/255)
         glVertex3f(9 , -self._width/2+1 , 0.0)
         glVertex3f(0 , -self._width/2+4 , 0.0)
         glVertex3f(11, -self._width/2+8 , 0.0)
@@ -270,11 +285,29 @@ class Car(object):
         
         #draw the rear window
         glBegin(GL_TRIANGLE_STRIP)
-        glColor3f(60.0/255, 90.0/255, 100.0/255)
+        glColor3f(70.0/255, 90.0/255, 100.0/255)
         glVertex3f(-13, -self._width/2+9 , 0.0)
         glVertex3f(-16, -self._width/2+8 , 0.0)
         glVertex3f(-13,  self._width/2-9 , 0.0)
         glVertex3f(-16,  self._width/2-8 , 0.0)
+        glEnd()
+        
+        #draw headlamps
+        glBegin(GL_TRIANGLE_STRIP)
+        glColor4fv(pygame.Color(240,240,180).normalize())
+        glVertex3f(self._length/2-3, -self._width/2+2, 0.0)
+        glVertex3f(self._length/2-2, -self._width/2+2, 0.0)
+        glVertex3f(self._length/2, -self._width/2+4, 0.0)
+        glVertex3f(self._length/2-2, -self._width/2+6, 0.0)
+        glVertex3f(self._length/2, -self._width/2+7, 0.0)
+        glEnd()
+        
+        glBegin(GL_TRIANGLE_STRIP)
+        glVertex3f(self._length/2-3, self._width/2-2, 0.0)
+        glVertex3f(self._length/2-2, self._width/2-2, 0.0)
+        glVertex3f(self._length/2, self._width/2-4, 0.0)
+        glVertex3f(self._length/2-2, self._width/2-6, 0.0)
+        glVertex3f(self._length/2, self._width/2-7, 0.0)
         glEnd()
         
         glPopMatrix()
