@@ -13,7 +13,7 @@ from Car import Car
 screenSize = 800, 600
 
 carStartPos = screenSize[0]/2, screenSize[1]/2
-car = Car( carStartPos, 0, 0, pygame.Color(255,0,0).normalize())
+car = Car( carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
 
 def resize((width, height)):
     if height == 0:
@@ -26,20 +26,13 @@ def resize((width, height)):
     glLoadIdentity
 
 def init():
-    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearColor(0.6, 0.6, 0.4, 0.0)
     
     
 def render():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     
-    
-    
-    glBegin(GL_LINES)
-    glColor3f(1.0, 1.0, 0.0)
-    glVertex3f(1.0, 0.0, 0.0)
-    glVertex3f(1.0, 20.0, 0.0)
-    glEnd()
     
     car.render()
     
@@ -66,7 +59,11 @@ def main():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             playing = False 
                 
+        
         pressed = pygame.key.get_pressed() # a list of booleans for all keys
+        
+        if pressed[pygame.K_r]:
+            car.__init__(carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
             
         if pressed[pygame.K_UP]:
             car.accelerate(timeSlice)

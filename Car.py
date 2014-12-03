@@ -8,12 +8,22 @@ from pygame.locals import *
     
 import pygame
 import math
-import hcnd_v1
 
 class Car(object):
     '''
     represents a car with all essential parts.
     What did YOU think this is?!
+    '''
+    
+    '''
+    Mazda MX5
+    Length:         570px
+    Width:          247px
+    Position Wheels: front 60 px, back 75 px
+    Wheels Length: 95px
+    wind shield position: 175px from front (18,4)
+    wind shield length: 100px (10,5)
+    folding top length: 170px (18,x)
     '''
     
     LEFT     = -1
@@ -36,64 +46,120 @@ class Car(object):
         self._heading      = 0.0 #direction in radians
         self._steerAngle   = 0.0
         
-        self._width          = 20
-        self._length         = 50
-        self._wheelBase      = 40
+        self._width          = 26
+        self._length         = 60
+        self._wheelBase      = abs(self._length*0.6)
+        self._tireLenght     = 10
+        self._tireWidth      = 5
     
     # power between 0.0 and 1.0    
     def accelerate(self, timeSlice, power=1.0):
         #TODO: acceleration depending on horsePower, weight and time of use (timeSlice).
         # return resulting speed.
-        self._speed = self._speed + timeSlice*power*10
+        self._speed = self._speed + timeSlice*power*30
         
     def brake(self, timeSlice):
         #TODO: depends on time and weight...
-        self._speed = self._speed - timeSlice*20
+        self._speed = self._speed - timeSlice*150
         if (self._speed < 0.0):
             self._speed = 0.0
             
     def steer(self, timeSlice, direction):
-        self._steerAngle += direction*timeSlice*math.pi/4.0
-        if self._steerAngle > math.pi/4.0:
-            self._steerAngle = math.pi/4.0
-        elif self._steerAngle < -math.pi/4.0:
-            self._steerAngle = -math.pi/4.0
-#         if direction == 0:
-#             self._steerAngle = 0
+        #steering left/right
+        self._steerAngle += direction*timeSlice*math.pi/5.0*1.5
+        if self._steerAngle > math.pi/5.0:
+            self._steerAngle = math.pi/5.0
+        elif self._steerAngle < -math.pi/5.0:
+            self._steerAngle = -math.pi/5.0
+        
+        # straightening wheels
+        if direction == 0:
+            if self._steerAngle > 0.0:
+                self._steerAngle -= timeSlice*math.pi/5.0
+                if self._steerAngle < 0.0:
+                    self._steerAngle = 0
+            elif self._steerAngle < 0.0:
+                self._steerAngle += timeSlice*math.pi/5.0
+                if self._steerAngle > 0.0:
+                    self._steerAngle = 0
+            
 
     def update(self, timeSlice):
         
-        
-#         frontWheel = self._pos + self._wheelBase/2 * ( math.cos(self._heading) , math.sin(self._heading) )
-#         backWheel = self._pos - self._wheelBase/2 * ( math.cos(self._heading) , math.sin(self._heading) )
-
+        # Calculates current position of wheels depending on position and orientation
+        # of the car
         frontWheelX = self._posX + self._wheelBase/2 * math.cos(self._heading)
         frontWheelY = self._posY + self._wheelBase/2 * math.sin(self._heading)
         backWheelX  = self._posX - self._wheelBase/2 * math.cos(self._heading)
         backWheelY  = self._posY - self._wheelBase/2 * math.sin(self._heading)  
         
-#         backWheel += self._speed * timeSlice * (math.cos(self._heading) , math.sin(self._heading))
-#         frontWheel += self._speed * timeSlice * (math.cos(self._heading+self._steerAngle) , math.sin(self._heading+self._steerAngle))
-
+        # Calculates the value by which the position of the wheels change based on
+        # speed, orientation and current steering angle of the car
         backWheelX  += self._speed * timeSlice * math.cos(self._heading)
         backWheelY  += self._speed * timeSlice * math.sin(self._heading)
         frontWheelX += self._speed * timeSlice * math.cos(self._heading+self._steerAngle)
         frontWheelY += self._speed * timeSlice * math.sin(self._heading+self._steerAngle)
         
+        # Calculates the resulting new position of the car by calculating the center 
+        # between front and back wheel. Also updates the direction of the car.
         self._posX = (frontWheelX + backWheelX) / 2.0
         self._posY = (frontWheelY + backWheelY) / 2.0
         self._heading = math.atan2( frontWheelY - backWheelY , frontWheelX - backWheelX )
         
-        
-#         self.pos[0] = self._pos[0] + math.sin(self._carHeading)*self._speed
-#         self._pos[1] = self._pos[1] + math.cos(self._carHeading)*self._speed
     
     def render(self):
+        
+        # transform to coordinates of the car
         glPushMatrix()
         glTranslatef(self._posX, self._posY, 0.0)
         glRotatef(math.degrees(self._heading),0.0, 0.0, 1.0)
-          
         
+        #draw the back wheels
+        glBegin(GL_QUADS)
+        glColor3f(60.0/255, 40.0/255, 30.0/255)
+        glVertex3f(-self._wheelBase/2-5, -self._width/2-2, 0.0)
+        glVertex3f(-self._wheelBase/2+5, -self._width/2-2, 0.0)
+        glVertex3f(-self._wheelBase/2+5, -self._width/2+3, 0.0)
+        glVertex3f(-self._wheelBase/2-5, -self._width/2+3, 0.0)
+        
+        glVertex3f(-self._wheelBase/2-5, self._width/2+2, 0.0)
+        glVertex3f(-self._wheelBase/2+5, self._width/2+2, 0.0)
+        glVertex3f(-self._wheelBase/2+5, self._width/2-3, 0.0)
+        glVertex3f(-self._wheelBase/2-5, self._width/2-3, 0.0)
+        glEnd()
+        
+        #transform to coordinates of front left wheel
+        glPushMatrix()
+        glTranslatef(self._wheelBase/2, -self._width/2, 0.0)
+        glRotatef(math.degrees(self._steerAngle), 0.0, 0.0, 1.0)
+        
+        #draw front left wheel
+        glBegin(GL_QUADS)
+        glVertex3f(-5, -2, 0.0)
+        glVertex3f(5, -2, 0.0)
+        glVertex3f(5, 3, 0.0)
+        glVertex3f(-5, 3, 0.0)
+        glEnd()
+        
+        glPopMatrix()
+        
+        #transform to coordinates of front right wheel
+        glPushMatrix()
+        glTranslatef(self._wheelBase/2, self._width/2, 0.0)
+        glRotatef(math.degrees(self._steerAngle), 0.0, 0.0, 1.0)
+        
+        #draw front right wheel
+        glBegin(GL_QUADS)
+        glVertex3f(-5, 2, 0.0)
+        glVertex3f(5, 2, 0.0)
+        glVertex3f(5, -3, 0.0)
+        glVertex3f(-5, -3, 0.0)
+        glEnd()
+         
+        glPopMatrix()
+        
+        
+        #draw the car body  
         glBegin(GL_QUADS)
         glColor4fv(self._color)
         glVertex3f(-self._length/2, -self._width/2, 0.0)
@@ -101,57 +167,44 @@ class Car(object):
         glVertex3f(self._length/2, self._width/2, 0.0)
         glVertex3f(-self._length/2, self._width/2, 0.0)
         glEnd()
-         
+        
+        #draw the wind shield
+        glBegin(GL_TRIANGLE_STRIP)
+        glColor3f(70.0/255, 105.0/255, 150.0/255)
+        glVertex3f(9 , -self._width/2+1 , 0.0)
+        glVertex3f(0 , -self._width/2+4 , 0.0)
+        glVertex3f(11, -self._width/2+8 , 0.0)
+        glVertex3f(2 , -self._width/2+10, 0.0)
+        glVertex3f(11,  self._width/2-8 , 0.0)
+        glVertex3f(2 ,  self._width/2-10, 0.0)
+        glVertex3f(9 ,  self._width/2-1 , 0.0)
+        glVertex3f(0 ,  self._width/2-4 , 0.0)
+        glEnd()
+        
+        #draw the folding top
+        #upper part
+        glBegin(GL_TRIANGLE_STRIP)
+        glColor3f(0.1,0.1,0.1)
+        glVertex3f(-1, -self._width/2+4 , 0.0)
+        glVertex3f(1 , -self._width/2+10, 0.0)
+        glVertex3f(-11, -self._width/2+4, 0.0)
+        glVertex3f(1 ,  self._width/2-10, 0.0)
+        glVertex3f(-11, self._width/2-4 , 0.0)
+        glVertex3f(-1 , self._width/2-4 , 0.0)
+        glEnd()
+        
+        #rear part
+        glBegin(GL_TRIANGLE_STRIP)
+        glVertex3f(-9,  -self._width/2+1 , 0.0)
+        glVertex3f(-11, -self._width/2+4 , 0.0)
+        glVertex3f(-18, -self._width/2+3 , 0.0)
+        glVertex3f(-11,  self._width/2-4 , 0.0)
+        glVertex3f(-18,  self._width/2-3 , 0.0)
+        glVertex3f(-9,   self._width/2-1 , 0.0)
+        glEnd()
+        
         glPopMatrix()
         
-#         backPosX  = self._posX - self._length / 2 * math.cos(self._heading) + self._width / 2 * math.sin(self._heading)
-#         frontPosX = self._posX + self._length / 2 * math.cos(self._heading) - self._width / 2 * math.sin(self._heading)
-#         leftPosY  = self._posY - self._width / 2 * math.cos(self._heading) + self._length / 2 * math.sin(self._heading)
-#         rightPosY = self._posY + self._width / 2 * math.cos(self._heading) - self._length / 2 * math.sin(self._heading)
         
-#         glBegin(GL_QUADS)
-#         # complete
-#         glColor3f(1.0,0.0,0.0)
-#         glVertex3f(backPosX, leftPosY, 0.0)
-#         glVertex3f(backPosX, rightPosY, 0.0)
-#         glVertex3f(frontPosX, rightPosY, 0.0)
-#         glVertex3f(frontPosX, leftPosY, 0.0)
-#         
-#         # center
-#         glColor3f(1.0,1.0,1.0)
-#         glVertex3f(self._posX-2, self._posY-2, 0.0)
-#         glVertex3f(self._posX-2, self._posY+2, 0.0)
-#         glVertex3f(self._posX+2, self._posY+2, 0.0)
-#         glVertex3f(self._posX+2, self._posY-2, 0.0)
-#         
-#         # back left
-#         glColor3f(1.0,1.0,0.0)
-#         glVertex3f(self._posX-2-self._length/2, self._posY-2-self._width/2, 0.0)
-#         glVertex3f(self._posX-2-self._length/2, self._posY+2-self._width/2, 0.0)
-#         glVertex3f(self._posX+2-self._length/2, self._posY+2-self._width/2, 0.0)
-#         glVertex3f(self._posX+2-self._length/2, self._posY-2-self._width/2, 0.0)
-#         
-#         # back right
-#         glColor3f(1.0,0.0,1.0)
-#         glVertex3f(self._posX-2-self._length/2, self._posY-2+self._width/2, 0.0)
-#         glVertex3f(self._posX-2-self._length/2, self._posY+2+self._width/2, 0.0)
-#         glVertex3f(self._posX+2-self._length/2, self._posY+2+self._width/2, 0.0)
-#         glVertex3f(self._posX+2-self._length/2, self._posY-2+self._width/2, 0.0)
-#         
-#         # front right
-#         glColor3f(0.0,1.0,1.0)
-#         glVertex3f(self._posX-2+self._length/2, self._posY-2+self._width/2, 0.0)
-#         glVertex3f(self._posX-2+self._length/2, self._posY+2+self._width/2, 0.0)
-#         glVertex3f(self._posX+2+self._length/2, self._posY+2+self._width/2, 0.0)
-#         glVertex3f(self._posX+2+self._length/2, self._posY-2+self._width/2, 0.0)
-#         
-#         # front left
-#         glColor3f(0.0,0.0,1.0)
-#         glVertex3f(self._posX-2+self._length/2, self._posY-2-self._width/2, 0.0)
-#         glVertex3f(self._posX-2+self._length/2, self._posY+2-self._width/2, 0.0)
-#         glVertex3f(self._posX+2+self._length/2, self._posY+2-self._width/2, 0.0)
-#         glVertex3f(self._posX+2+self._length/2, self._posY-2-self._width/2, 0.0)
-#         glEnd()
-        
-if __name__ == '__main__':
-    hcnd_v1.main()
+# if __name__ == '__main__':
+#     hcnd_v1.main()
