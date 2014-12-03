@@ -8,12 +8,13 @@ from pygame.locals import *
 
 import pygame
 
-from Car import Car
+from car_v2 import Car
 
 screenSize = 800, 600
 
-carStartPos = screenSize[0]/2, screenSize[1]/2
-car = Car( carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
+carStartPos = 40, screenSize[1]/2
+# car = Car( carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
+car = Car(Car.MAZDA, (220,20,20), carStartPos)
 
 def resize((width, height)):
     if height == 0:
@@ -46,14 +47,14 @@ def main():
     
     resize(screenSize)
     init()
-
+    
     newTime = pygame.time.get_ticks()
     
     playing = True
     while playing:
         oldTime = newTime
         newTime = pygame.time.get_ticks()
-        timeSlice = (newTime - oldTime)/1000.0
+        deltaTime = (newTime - oldTime)/1000.0
         
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -66,22 +67,22 @@ def main():
             car.__init__(carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
             
         if pressed[pygame.K_UP]:
-            car.accelerate(timeSlice)
+            car.accelerate(deltaTime)
         
         if pressed[pygame.K_DOWN]:
-            car.brake(timeSlice)
+            car.brake(deltaTime)
         
         if pressed[pygame.K_LEFT]:
-            car.steer(timeSlice, Car.LEFT)
+            car.steer(deltaTime, Car.LEFT)
         elif pressed [pygame.K_RIGHT]:
-            car.steer(timeSlice, Car.RIGHT)
+            car.steer(deltaTime, Car.RIGHT)
         else:
-            car.steer(timeSlice, Car.STRAIGHT)
+            car.steer(deltaTime, Car.STRAIGHT)
         
                
             
             
-        car.update(timeSlice)
+        car.update(deltaTime)
         render()
         
 if __name__ == '__main__':
