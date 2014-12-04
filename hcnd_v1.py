@@ -8,13 +8,13 @@ from pygame.locals import *
 
 import pygame
 
-from car_v2 import Car
+from car_v1 import Car
 
 screenSize = 800, 600
 
 carStartPos = 40, screenSize[1]/2
-# car = Car( carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
-car = Car(Car.MAZDA, (220,20,20), carStartPos)
+car = Car( carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
+# car = Car(Car.MAZDA, (220,20,20), carStartPos)
 
 def resize((width, height)):
     if height == 0:
