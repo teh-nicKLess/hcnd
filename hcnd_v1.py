@@ -8,12 +8,13 @@ from pygame.locals import *
 
 import pygame
 
-from Car import Car
+from car_v1 import Car
 
 screenSize = 800, 600
 
-carStartPos = screenSize[0]/2, screenSize[1]/2
-car = Car( carStartPos[0], carStartPos[1], 0, 0, pygame.Color(255,0,0).normalize())
+carStartPos = 40, screenSize[1]/2
+car = Car( carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
+# car = Car(Car.MAZDA, (220,20,20), carStartPos)
 
 def resize((width, height)):
     if height == 0:
@@ -26,20 +27,13 @@ def resize((width, height)):
     glLoadIdentity
 
 def init():
-    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearColor(0.6, 0.6, 0.4, 0.0)
     
     
 def render():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     
-    
-    
-    glBegin(GL_LINES)
-    glColor3f(1.0, 1.0, 0.0)
-    glVertex3f(1.0, 0.0, 0.0)
-    glVertex3f(1.0, 20.0, 0.0)
-    glEnd()
     
     car.render()
     
@@ -54,11 +48,41 @@ def main():
     resize(screenSize)
     init()
     
-    while True:
+    newTime = pygame.time.get_ticks()
+    
+    playing = True
+    while playing:
+        oldTime = newTime
+        newTime = pygame.time.get_ticks()
+        deltaTime = (newTime - oldTime)/1000.0
+        
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-            break
+            playing = False 
+                
         
+        pressed = pygame.key.get_pressed() # a list of booleans for all keys
+        
+        if pressed[pygame.K_r]:
+            car.__init__(carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
+            
+        if pressed[pygame.K_UP]:
+            car.accelerate(deltaTime)
+        
+        if pressed[pygame.K_DOWN]:
+            car.brake(deltaTime)
+        
+        if pressed[pygame.K_LEFT]:
+            car.steer(deltaTime, Car.LEFT)
+        elif pressed [pygame.K_RIGHT]:
+            car.steer(deltaTime, Car.RIGHT)
+        else:
+            car.steer(deltaTime, Car.STRAIGHT)
+        
+               
+            
+            
+        car.update(deltaTime)
         render()
         
 if __name__ == '__main__':
