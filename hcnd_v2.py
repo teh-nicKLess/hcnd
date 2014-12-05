@@ -1,19 +1,20 @@
 '''
-Created on 24.06.2014
+Created on 05.12.2014
 
-@author: teh_nicKLess
+@author: Matthias
 '''
 from OpenGL.GL import *
 from pygame.locals import *
 
 import pygame
 
-from car_v1 import Car
+from car_v2 import Car
 
-screenSize = 800, 600
+screenSize  = 800, 600
+proportion  = 1.0 / 0.067
 
 carStartPos = 40, screenSize[1]/2
-car = Car( carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
+car = Car(Car.MAZDA, (200,20,20), carStartPos)
 
 
 def resize((width, height)):
@@ -31,16 +32,18 @@ def init():
     
     
 def render():
+    global proportion
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     
     
-    car.render()
+    car.render(proportion)
     
     pygame.display.flip()
 
 def main():
-    global car
+    global car, proportion
     video_flags = OPENGL | HWSURFACE | DOUBLEBUF
     
     pygame.init()
@@ -50,6 +53,9 @@ def main():
     init()
     
     newTime = pygame.time.get_ticks()
+    
+    driveMode   = Car.ROLL
+    steering    = Car.STRAIGHT
     
     playing = True
     while playing:
@@ -65,25 +71,25 @@ def main():
         pressed = pygame.key.get_pressed() # a list of booleans for all keys
         
         if pressed[pygame.K_r]:
-            car = Car(carStartPos, 0, 0, pygame.Color(200,20,20).normalize())
+            car = Car(Car.MAZDA, (200,20,20), carStartPos)
             
-        if pressed[pygame.K_UP]:
-            car.accelerate(deltaTime)
         
         if pressed[pygame.K_DOWN]:
-            car.brake(deltaTime)
+            driveMode = Car.BRAKE    
+        elif pressed[pygame.K_UP]:
+            driveMode = Car.ACCELERATE
+        else:
+            driveMode = Car.ROLL
+        
         
         if pressed[pygame.K_LEFT]:
-            car.steer(deltaTime, Car.LEFT)
+            steering = Car.LEFT
         elif pressed [pygame.K_RIGHT]:
-            car.steer(deltaTime, Car.RIGHT)
+            steering = Car.RIGHT
         else:
-            car.steer(deltaTime, Car.STRAIGHT)
+            steering = Car.STRAIGHT
         
-               
-            
-            
-        car.update(deltaTime)
+        car.update(driveMode, proportion, steering, 12.8, deltaTime)
         render()
         
 if __name__ == '__main__':

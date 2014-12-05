@@ -70,27 +70,27 @@ class Car(object):
         if (self._speed < 0.0):
             self._speed = 0.0
             
-    def steer(self, timeSlice, direction):
+    def steer(self, deltaTime, steering):
         #steering left/right
-        self._steerAngle += direction*timeSlice*math.pi/5.0*1.5
+        self._steerAngle += steering*deltaTime*math.pi/5.0*1.5
         if self._steerAngle > math.pi/5.0:
             self._steerAngle = math.pi/5.0
         elif self._steerAngle < -math.pi/5.0:
             self._steerAngle = -math.pi/5.0
         
         # straightening wheels
-        if direction == 0:
+        if steering == 0:
             if self._steerAngle > 0.0:
-                self._steerAngle -= timeSlice*math.pi/5.0
+                self._steerAngle -= deltaTime*math.pi/5.0
                 if self._steerAngle < 0.0:
                     self._steerAngle = 0
             elif self._steerAngle < 0.0:
-                self._steerAngle += timeSlice*math.pi/5.0
+                self._steerAngle += deltaTime*math.pi/5.0
                 if self._steerAngle > 0.0:
                     self._steerAngle = 0
             
 
-    def update(self, timeSlice):
+    def update(self, deltaTime):
         
         # Calculates current position of wheels depending on position and orientation
         # of the car
@@ -101,10 +101,10 @@ class Car(object):
         
         # Calculates the value by which the position of the wheels change based on
         # speed, orientation and current steering angle of the car
-        backWheelX  += self._speed * timeSlice * math.cos(self._heading)
-        backWheelY  += self._speed * timeSlice * math.sin(self._heading)
-        frontWheelX += self._speed * timeSlice * math.cos(self._heading+self._steerAngle)
-        frontWheelY += self._speed * timeSlice * math.sin(self._heading+self._steerAngle)
+        backWheelX  += self._speed * deltaTime * math.cos(self._heading)
+        backWheelY  += self._speed * deltaTime * math.sin(self._heading)
+        frontWheelX += self._speed * deltaTime * math.cos(self._heading+self._steerAngle)
+        frontWheelY += self._speed * deltaTime * math.sin(self._heading+self._steerAngle)
         
         # Calculates the resulting new position of the car by calculating the center 
         # between front and back wheel. Also updates the direction of the car.
