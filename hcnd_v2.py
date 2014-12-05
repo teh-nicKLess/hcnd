@@ -13,7 +13,7 @@ from car_v2 import Car
 screenSize  = 800, 600
 proportion  = 1.0 / 0.067
 
-carStartPos = 40, screenSize[1]/2
+carStartPos = 2, 10
 car = Car(Car.MAZDA, (200,20,20), carStartPos)
 
 
@@ -89,7 +89,10 @@ def main():
         else:
             steering = Car.STRAIGHT
         
-        car.update(driveMode, proportion, steering, 12.8, deltaTime)
+        if pressed[K_z]:
+            pass
+        
+        car.update(proportion, driveMode, steering, 12.8, deltaTime)
         render()
         
 if __name__ == '__main__':

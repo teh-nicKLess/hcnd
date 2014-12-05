@@ -37,7 +37,7 @@ class Car(object):
         '''
         Constructor
         '''
-        self._enginePower   = model[0]*1000
+        self._enginePower   = model[0]*100
         self._length        = model[1]
         self._width         = model[2]
         self._weight        = model[3]
@@ -64,7 +64,7 @@ class Car(object):
     def physics(self, driveMode, constRollResist, deltaTime):
         #constRollResist: rolling resistance approx. 30 * self._constDrag, depends on surface
         
-        constBraking = 100000
+        constBraking = 20000
         appliedForce = 0
         if driveMode == 1:
             forceTraction   = self._heading * self._enginePower
@@ -107,15 +107,14 @@ class Car(object):
                     
     def update(self, proportion, driveMode, steering, constRollResist, deltaTime):
         
-        pixelWheelbase = round(self._wheelBase*proportion)
         
         self.physics(driveMode, constRollResist, deltaTime)
         self.steer(steering, deltaTime)
         
         # Calculates current position of wheels depending on position and orientation
         # of the car
-        backWheel   = self._pos - pixelWheelbase/2 * self._heading
-        frontWheel  = self._pos + pixelWheelbase/2 * self._heading
+        backWheel   = self._pos - self._wheelBase/2 * self._heading
+        frontWheel  = self._pos + self._wheelBase/2 * self._heading
         
         # Calculates the value by which the position of the wheels change based on
         # speed, orientation and current steering angle of the car
@@ -131,21 +130,21 @@ class Car(object):
         self._headingAngle  = math.radians(self._heading.angle)
         self._velocity      = self._heading * self._speed
         
-        print "Heading: ", self._heading
-        print "Heading angle: ", math.degrees(self._headingAngle)
-        print "FrontWheel - BackWheel: ",frontWheel - backWheel
+#         print "Heading:", self._heading, " Heading angle:", math.degrees(self._headingAngle), " FrontWheel - BackWheel:",frontWheel - backWheel
+        print "Speed:", self._speed
         
     def render(self, proportion):
         
-        pixelLength = round(self._length*proportion)
-        pixelWidth  = round(self._width*proportion)
-        pixelWheelbase = round(self._wheelBase*proportion)
-        pixelTireLength = round(self._tireLength)
-        pixelTireWidth = round(self._tireWidth)
+        pixelPos        = (self._pos*proportion)
+        pixelLength     = round(self._length*proportion)
+        pixelWidth      = round(self._width*proportion)
+        pixelWheelbase  = round(self._wheelBase*proportion)
+        pixelTireLength = round(self._tireLength*proportion)
+        pixelTireWidth  = round(self._tireWidth*proportion)
         
         # transform to coordinates of the car
         glPushMatrix()
-        glTranslatef(self._pos.x, self._pos.y, 0.0)
+        glTranslatef(pixelPos.x, pixelPos.y, 0.0)
         glRotatef(self._heading.angle,0.0, 0.0, 1.0)
         
         #draw the back wheels
