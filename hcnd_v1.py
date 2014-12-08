@@ -8,7 +8,7 @@ from pygame.locals import *
 
 import pygame
 
-from car_v1 import Car
+from Car.car_v1 import Car
 
 screenSize = 800, 600
 

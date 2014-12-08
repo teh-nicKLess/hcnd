@@ -8,7 +8,7 @@ from pygame.locals import *
 
 import pygame
 
-from car_v2 import Car
+from Car.car_v2 import Car
 
 screenSize  = 800, 600
 proportion  = 1.0 / 0.067
@@ -37,9 +37,11 @@ def render():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     
+    for track in car.getTracks():
+        track.render(proportion)
     
     car.render(proportion)
-    
+
     pygame.display.flip()
 
 def main():
@@ -53,6 +55,7 @@ def main():
     init()
     
     newTime = pygame.time.get_ticks()
+    startTime = newTime
     
     driveMode   = Car.ROLL
     steering    = Car.STRAIGHT
@@ -92,7 +95,11 @@ def main():
         if pressed[K_z]:
             pass
         
-        car.update(proportion, driveMode, steering, 12.8, deltaTime)
+#         if car._speed > 100/3.6:
+#             playing = False
+#             print newTime - startTime
+               
+        car.update(driveMode, steering, 12.8, deltaTime)
         render()
         
 if __name__ == '__main__':
