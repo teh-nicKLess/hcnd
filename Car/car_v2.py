@@ -6,11 +6,11 @@ Created on 03.12.2014
 from OpenGL.GL import *
 from pygame.locals import *
 from utilities.vec2d import Vec2d
+from utilities import console
 
 import pygame
 import math
 from Car.tireTrack import TireTrack
-from Queue import Queue
 
 class Car(object):
     ''''
@@ -20,11 +20,14 @@ class Car(object):
     Differences to v1:
     Movement is now based on physical forces rather than magic numbers.
     '''
+    NORMAL_FORCE = 9.81
     
+    # Steering modes
     LEFT     = -1
     RIGHT    = 1
     STRAIGHT = 0
     
+    # Drive modes
     ACCELERATE  = 1
     BRAKE       = -1
     ROLL        = 0
@@ -40,11 +43,19 @@ class Car(object):
         '''
         Constructor
         '''
-        self._enginePower   = model[0]*100
+        
+        self._enginePower   = model[0]*1000
+        
+        # Length x Width x Height in meters
         self._length        = model[1]
         self._width         = model[2]
         self._height        = model[3]
-        self._weight        = model[4]
+        
+        # Mass in kg
+        self._mass          = model[4]
+        
+        # Weight in Newton
+        self._weight        = self._mass * Car.NORMAL_FORCE
         self._color         = pygame.Color(color[0], color[1], color[2]).normalize()
         
         # center of mass: relative position from rear axle to front, relative height
@@ -56,9 +67,9 @@ class Car(object):
         for comparison: constDrag for a Corvette is approx. 0.4257
         Actual formula is: 0.5 * Cd * A * rho * v^2
         where Cd = coefficient of friction (wind tunnel tests, 0.30 for Corvette)
-        A = forntal area of car (approx. 2,2 m^2)
+        A = frontal area of car (approx. 2,2 m^2)
         rho = density of air
-        v = speed of car
+        v = velocity of car
         '''
         self._constDrag     = model[6]
 
@@ -93,10 +104,12 @@ class Car(object):
         constFriction   = 1.0
         appliedForce    = 0
         if driveMode == 1:
+            #2D Vector for traction force, when accelerating
             forceTraction   = self._heading * self._enginePower
             # weightRear for rear wheel drive
-            maxForceTr      = constFriction * self._weightRear
-            if forceTraction > maxForceTr:
+            maxForceTr      = self._heading * constFriction * self._weightRear
+            console.update('maxForceTr', maxForceTr)
+            if forceTraction.get_length() > maxForceTr.get_length():
                 forceTraction = maxForceTr
                 self._makeTracks = True
             appliedForce    = forceTraction
@@ -104,22 +117,40 @@ class Car(object):
             forceBraking    = -self._heading * constBraking
             appliedForce    = forceBraking
         else:
-            appliedForce    = 0    
-            
+            appliedForce    = (0,0)    
+        
+        
+        # aerodynamic drag    
         forceDrag       = -self._constDrag * self._velocity * self._velocity.get_length()
+        
+        # roll resistance in Newton
         forceRollResist = -constRollResist * self._velocity
+        
+        # alternative roll resistance
+#         c = 0.005
+#         chelp = 0.01 + 0.0095 * (self._speed / 27.8)**2
+#         c = c + (chelp)/2.5
+#         altRollResist = c * self._weight * -self._heading
         
         forceLongitude  = appliedForce + forceDrag + forceRollResist
         
-        acceleration    = forceLongitude / self._weight #not final, takes only longitude force
+        acceleration    = forceLongitude / self._mass #not final, takes only longitude force
         
-        self._weightFront   = self._centerGrav[0] * self._weight - (self._height * self._centerGrav[1] * self._wheelBase) * (self._weight/10.0) * acceleration.get_length()
-        self._weightRear    = (1-self._centerGrav[0]) * self._weight + (self._height * self._centerGrav[1] * self._wheelBase) * (self._weight/10.0) * acceleration.get_length()
-        print self._weightRear, self._weightFront
-#         print "rear: %.2f, front %.2f" % self._weightRear, self._weightFront
+        self._weightFront   = self._centerGrav[0] * self._weight - (self._height * self._centerGrav[1] / self._wheelBase) * self._mass * (acceleration.get_length() * driveMode)
+        self._weightRear    = (1-self._centerGrav[0]) * self._weight + (self._height * self._centerGrav[1] / self._wheelBase) * self._mass * (acceleration.get_length() * driveMode)
         
         self._velocity  = self._velocity + deltaTime*acceleration
         self._speed     = self._velocity.get_length()
+
+        console.update('Speed', (self._speed*3.6))        
+        console.update('forceTraction', appliedForce)
+#         console.update('forceDrag', forceDrag)
+#         console.update('forceRollResist', forceRollResist)
+#         console.update('forceLongitude', forceLongitude)
+#         console.update('Rear Weight', self._weightRear)
+#         console.update('Front Weight', self._weightFront)
+#         console.update('Velocity', self._velocity)
+        console.update('Acceleration', acceleration)
     
     
     def steer(self, steering, deltaTime):
@@ -154,6 +185,7 @@ class Car(object):
         self.physics(driveMode, constRollResist, deltaTime)
         self.steer(steering, deltaTime)
         
+        # Needed for tire tracks
         oldPos  = self._pos
         
         # Calculates current position of wheels depending on position and orientation
@@ -175,6 +207,7 @@ class Car(object):
         self._headingAngle  = math.radians(self._heading.angle)
         self._velocity      = self._heading * self._speed
         
+        # Code for making tire tracks.
         if self._makeTracks:
             if len(self._tireTracks)<self.MAX_TRACKS:
                 self._tireTracks.append(TireTrack(oldPos, self._pos, self._tireWidth))
@@ -184,8 +217,6 @@ class Car(object):
                 self._index += 1
             self._makeTracks = False
         
-#         print "Heading:", self._heading, " Heading angle:", math.degrees(self._headingAngle), " FrontWheel - BackWheel:",frontWheel - backWheel
-        print "Speed: %.2f km/h" % (self._speed*3.6)
         
     def render(self, proportion):
         

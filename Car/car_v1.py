@@ -41,7 +41,7 @@ class Car(object):
         
         
         self._enginePower   = horsePower
-        self._weight       = weight
+        self._mass       = weight
         self._color        = color
         
         self._posX         = pos[0]

@@ -3,18 +3,27 @@ Created on 05.12.2014
 
 @author: Matthias
 '''
-from OpenGL.GL import *
-from pygame.locals import *
-
-import pygame
-
-from Car.car_v2 import Car
+try:
+    import sys
+    from OpenGL.GL import *
+    from pygame.locals import *
+    
+    import pygame
+    from utilities import console
+    
+    from Car.car_v2 import Car
+except ImportError, err:
+    print "Could not load module. %s" % (err)
+    sys.exit(2)
+    
 
 screenSize  = 800, 600
 proportion  = 1.0 / 0.067
+fps = 0
+enableConsole  = True
 
 carStartPos = 2, 10
-car = Car(Car.MAZDA, (200,20,20), carStartPos)
+car     = Car(Car.MAZDA, (200,20,20), carStartPos)
 
 
 def resize((width, height)):
@@ -28,11 +37,14 @@ def resize((width, height)):
     glLoadIdentity
 
 def init():
-    glClearColor(0.6, 0.6, 0.4, 0.0)
+    glClearColor(0.6, 0.6, 0.4, 1.0)
+    
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     
     
 def render():
-    global proportion
+    global proportion, screenSize
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -41,21 +53,34 @@ def render():
         track.render(proportion)
     
     car.render(proportion)
-
+    if enableConsole:
+        console.printIt(screenSize), (0,0)
+        
+#     glBegin(GL_TRIANGLES)
+#     glColor4f(0.0,0.0,0.0,0.5)
+#     glVertex3f(0.0,0.0,0.0)
+#     glVertex3f(0.0,80.0,0.0)
+#     glVertex3f(80.0, 0.0, 0.0)
+#     glEnd()
+        
     pygame.display.flip()
+    
 
 def main():
-    global car, proportion
+    global car, proportion, fps, enableConsole
     video_flags = OPENGL | HWSURFACE | DOUBLEBUF
     
     pygame.init()
     pygame.display.set_mode(screenSize, video_flags)
+    pygame.display.set_caption('Here Car, Now Drive!')
     
     resize(screenSize)
     init()
     
-    newTime = pygame.time.get_ticks()
-    startTime = newTime
+    newTime     = pygame.time.get_ticks()
+    startTime   = newTime
+    fpsTime     = 0
+    console.update('FPS', 0)
     
     driveMode   = Car.ROLL
     steering    = Car.STRAIGHT
@@ -68,7 +93,9 @@ def main():
         
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-            playing = False 
+            playing = False
+        elif event.type == KEYDOWN and event.key == K_F1:
+            enableConsole = not enableConsole 
                 
         
         pressed = pygame.key.get_pressed() # a list of booleans for all keys
@@ -92,8 +119,16 @@ def main():
         else:
             steering = Car.STRAIGHT
         
+        # to toggle breakpoint at custom times
         if pressed[K_z]:
             pass
+        
+        fpsTime += newTime - oldTime
+        fps += 1
+        if fpsTime >= 1000:
+            console.update('FPS', fps) 
+            fpsTime -= 1000
+            fps = 0
         
 #         if car._speed > 100/3.6:
 #             playing = False
