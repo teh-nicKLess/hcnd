@@ -16,7 +16,10 @@ def update(name, value):
     if type(value) is float:
         text = "%s : %.2f" % (name, value)
     elif type(value) is tuple:
-        text = "%s : %.2f, %.2f" % (name, value[0], value[1])
+        text = "%s : " % name
+        for part in value:
+            text = text + "%.2f, " % part
+        text = text[:-2]
     elif type(value) is utilities.vec2d.Vec2d:
         text = "%s : %.2f, %.2f" % (name, value.x, value.y)
     else:

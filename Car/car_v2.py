@@ -210,13 +210,14 @@ class Car(object):
         # Code for making tire tracks.
         if self._makeTracks:
             if len(self._tireTracks)<self.MAX_TRACKS:
-                self._tireTracks.append(TireTrack(oldPos, self._pos, self._tireWidth))
+                self._tireTracks.append(TireTrack(oldPos, self._pos, self._tireWidth, self._tireColor))
             else:
                 self._index %= self.MAX_TRACKS
-                self._tireTracks[self._index] = TireTrack(oldPos, self._pos, self._tireWidth)
+                self._tireTracks[self._index] = TireTrack(oldPos, self._pos, self._tireWidth, self._tireColor)
                 self._index += 1
             self._makeTracks = False
         
+        console.update('tireColor', self._tireColor)
         
     def render(self, proportion):
         

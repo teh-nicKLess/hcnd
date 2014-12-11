@@ -16,7 +16,7 @@ class TireTrack(object):
     '''
 
 
-    def __init__(self, start, end, tireWidth):
+    def __init__(self, start, end, tireWidth, color):
         '''
         Constructor
         '''
@@ -27,7 +27,7 @@ class TireTrack(object):
         self._angle     = Vec2d(start - end).get_angle()
         
         self._width     = tireWidth
-        self._color     = pygame.Color(60, 40, 30).normalize()
+        self._color     = color[0], color[1], color[2], 0.85
         
 #         print "Length: %.2f" % self._length
         
