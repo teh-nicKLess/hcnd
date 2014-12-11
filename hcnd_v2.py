@@ -22,7 +22,7 @@ proportion  = 1.0 / 0.067
 fps = 0
 enableConsole  = True
 
-carStartPos = 2, 10
+carStartPos = 3, 10
 car     = Car(Car.MAZDA, (200,20,20), carStartPos)
 
 
@@ -32,7 +32,7 @@ def resize((width, height)):
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    glOrtho(-10.0, width + 10.0, height + 10.0, -10.0, -6.0, 0.0)
+    glOrtho(0.0, width, height, 0.0, -6.0, 0.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity
 
@@ -41,6 +41,9 @@ def init():
     
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    
+#     glEnable(GL_POLYGON_SMOOTH)
+#     glLineWidth(1.5)
     
     
 def render():

@@ -77,7 +77,7 @@ class Car(object):
         self._wheelBase     = self._length*0.6
         self._tireLength    = self._length/6.0
         self._tireWidth     = self._tireLength/2.0
-        self._tireColor     = pygame.Color(60, 40, 30).normalize()
+        self._tireColor     = pygame.Color(50, 30, 30).normalize()
         
         self._pos = Vec2d(startPos)
         
@@ -294,14 +294,14 @@ class Car(object):
         glVertex3f(-pixelLength/2+3, pixelWidth/2, 0.0)
         
         #front right
-        glVertex3f(pixelLength/2-6, pixelWidth/2, 0.0)
-        glVertex3f(pixelLength/2-2, pixelWidth/2-1, 0.0)
-        glVertex3f(pixelLength/2, pixelWidth/2-4, 0.0)
+        glVertex3f(pixelLength/2-5, pixelWidth/2, 0.0)
+        glVertex3f(pixelLength/2-3, pixelWidth/2-2, 0.0)
+        glVertex3f(pixelLength/2, pixelWidth/2-8, 0.0)
         
         #front left
-        glVertex3f(pixelLength/2, -pixelWidth/2+4, 0.0)
-        glVertex3f(pixelLength/2-2, -pixelWidth/2+1, 0.0)
-        glVertex3f(pixelLength/2-6, -pixelWidth/2, 0.0)
+        glVertex3f(pixelLength/2, -pixelWidth/2+8, 0.0)
+        glVertex3f(pixelLength/2-3, -pixelWidth/2+2, 0.0)
+        glVertex3f(pixelLength/2-5, -pixelWidth/2, 0.0)
         glVertex3f(-pixelLength/2+3, -pixelWidth/2, 0.0)
         
         glEnd()
@@ -324,11 +324,11 @@ class Car(object):
         #hood lines
         glBegin(GL_LINES)
         glColor4fv(pygame.Color(120,20,20).normalize())
-        glVertex3f(10, -pixelWidth/2+1 , 0.0)
-        glVertex3f(pixelLength/2-4, -pixelWidth/2+2 , 0.0)
+        glVertex3f(10, -pixelWidth/2+2 , 0.0)
+        glVertex3f(pixelLength/2-5, -pixelWidth/2+3 , 0.0)
         
-        glVertex3f(10, pixelWidth/2-1 , 0.0)
-        glVertex3f(pixelLength/2-4, pixelWidth/2-2 , 0.0)
+        glVertex3f(10, pixelWidth/2-2 , 0.0)
+        glVertex3f(pixelLength/2-5, pixelWidth/2-3 , 0.0)
         glEnd()
         
         #trunk lines
@@ -354,13 +354,13 @@ class Car(object):
         #draw the wind shield
         glBegin(GL_TRIANGLE_STRIP)
         glColor3f(110.0/255, 140.0/255, 150.0/255)
-        glVertex3f(9 , -pixelWidth/2+1 , 0.0)
+        glVertex3f(9 , -pixelWidth/2+2 , 0.0)
         glVertex3f(0 , -pixelWidth/2+4 , 0.0)
         glVertex3f(11, -pixelWidth/2+8 , 0.0)
         glVertex3f(2 , -pixelWidth/2+10, 0.0)
         glVertex3f(11,  pixelWidth/2-8 , 0.0)
         glVertex3f(2 ,  pixelWidth/2-10, 0.0)
-        glVertex3f(9 ,  pixelWidth/2-1 , 0.0)
+        glVertex3f(9 ,  pixelWidth/2-2 , 0.0)
         glVertex3f(0 ,  pixelWidth/2-4 , 0.0)
         glEnd()
         
@@ -415,19 +415,21 @@ class Car(object):
         #draw headlamps
         glBegin(GL_TRIANGLE_STRIP)
         glColor4fv(pygame.Color(240,240,180).normalize())
-        glVertex3f(pixelLength/2-3, -pixelWidth/2+2, 0.0)
-        glVertex3f(pixelLength/2-2, -pixelWidth/2+2, 0.0)
-        glVertex3f(pixelLength/2, -pixelWidth/2+4, 0.0)
-        glVertex3f(pixelLength/2-2, -pixelWidth/2+6, 0.0)
-        glVertex3f(pixelLength/2, -pixelWidth/2+7, 0.0)
+        glVertex3f(pixelLength/2-5, -pixelWidth/2+2, 0.0)
+        glVertex3f(pixelLength/2-5, -pixelWidth/2+3, 0.0)
+        glVertex3f(pixelLength/2-3, -pixelWidth/2+7, 0.0)
+        glVertex3f(pixelLength/2-1, -pixelWidth/2+7, 0.0)
+        glVertex3f(pixelLength/2-3, -pixelWidth/2+3, 0.0)
+        glVertex3f(pixelLength/2-4, -pixelWidth/2+2, 0.0)
         glEnd()
-        
+         
         glBegin(GL_TRIANGLE_STRIP)
-        glVertex3f(pixelLength/2-3, pixelWidth/2-2, 0.0)
-        glVertex3f(pixelLength/2-2, pixelWidth/2-2, 0.0)
-        glVertex3f(pixelLength/2, pixelWidth/2-4, 0.0)
-        glVertex3f(pixelLength/2-2, pixelWidth/2-6, 0.0)
-        glVertex3f(pixelLength/2, pixelWidth/2-7, 0.0)
+        glVertex3f(pixelLength/2-5, pixelWidth/2-2, 0.0)
+        glVertex3f(pixelLength/2-4, pixelWidth/2-2, 0.0)
+        glVertex3f(pixelLength/2-3, pixelWidth/2-3, 0.0)
+        glVertex3f(pixelLength/2-1, pixelWidth/2-7, 0.0)
+        glVertex3f(pixelLength/2-3, pixelWidth/2-7, 0.0)
+        glVertex3f(pixelLength/2-5, pixelWidth/2-3, 0.0)
         glEnd()
         
         glPopMatrix()
