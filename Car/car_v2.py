@@ -128,7 +128,7 @@ class Car(object):
         
         # alternative roll resistance
 #         c = 0.005
-#         chelp = 0.01 + 0.0095 * (self._speed / 27.8)**2
+#         chelp = 0.01 + 0.0095 * (self._speed * 0,036 )**2
 #         c = c + (chelp)/2.5
 #         altRollResist = c * self._weight * -self._heading
         
@@ -139,7 +139,13 @@ class Car(object):
         self._weightFront   = self._centerGrav[0] * self._weight - (self._height * self._centerGrav[1] / self._wheelBase) * self._mass * (acceleration.get_length() * driveMode)
         self._weightRear    = (1-self._centerGrav[0]) * self._weight + (self._height * self._centerGrav[1] / self._wheelBase) * self._mass * (acceleration.get_length() * driveMode)
         
+        
         self._velocity  = self._velocity + deltaTime*acceleration
+        
+        # small tweak to allow the car to stop
+        if self._velocity.get_length() < 0.10 and not driveMode == 1:
+            self._velocity = Vec2d(0.0, 0.0)
+        
         self._speed     = self._velocity.get_length()
 
         console.update('Speed', (self._speed*3.6))        
@@ -217,7 +223,6 @@ class Car(object):
                 self._index += 1
             self._makeTracks = False
         
-        console.update('tireColor', self._tireColor)
         
     def render(self, proportion):
         
